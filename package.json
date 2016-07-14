@@ -1,0 +1,24 @@
+{
+  "name": "scriptly",
+  "version": "0.0.1",
+  "description": "Dynamic script loading with a Promise API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krohling/scriptly.git"
+  },
+  "keywords": [
+    "react",
+    "javascript",
+    "promises"
+  ],
+  "author": "Kevin Rohling",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/krohling/scriptly/issues"
+  },
+  "homepage": "https://github.com/krohling/scriptly#readme"
+}
