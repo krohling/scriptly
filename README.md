@@ -52,9 +52,16 @@ Scriptly.loadCSS('/path/to/stylesheet.css')
 Just pass an Array if you'd like to load more than one file at a time.
 
 ```js
-Scriptly.loadJavascript(['/path/to/stylesheet1.css', '/path/to/stylesheet2.css'])
+Scriptly.loadCSS(['/path/to/stylesheet1.css', '/path/to/stylesheet2.css'])
         .then(() => {
           console.log("All CSS files loaded!");
+        }, (err) => {
+          console.log("oops!");
+        });
+
+Scriptly.loadJavascript(['/path/to/js1.js', '/path/to/js2.js'])
+        .then(() => {
+          console.log("All JS files loaded!");
         }, (err) => {
           console.log("oops!");
         });
