@@ -1,17 +1,53 @@
 var scripts = [];
-// { url: 'script/url', complete: true, error: Error }
+
+const POLL_FREQUENCY = 1000;
+const JS_SCRIPT_TYPE = 'js';
+const CSS_SCRIPT_TYPE = 'css';
 
 module.exports = {
-    loadScript: function(scriptURL) {
+    loadAll: function(all) {
+        var promises = all.map(function(s) {
+            return this.loadScript(s.url, s.type);
+        }.bind(this));
+        return Promise.all(promises);
+    },
+    loadCSS: function(cssURL) {
+        if(cssURL.constructor === Array) {
+            var promises = cssURL.map(function(url) {
+                return this.loadScript(url, CSS_SCRIPT_TYPE);
+            }.bind(this));
+            return Promise.all(promises);
+        }
+        else {
+            return this.loadScript(cssURL, CSS_SCRIPT_TYPE);
+        }
+    },
+    loadJavascript: function(scriptURL) {
+        if(scriptURL.constructor === Array) {
+            var promises = scriptURL.map(function(url) {
+                return this.loadScript(url, JS_SCRIPT_TYPE);
+            }.bind(this));
+            return Promise.all(promises);
+        }
+        else {
+            return this.loadScript(scriptURL, JS_SCRIPT_TYPE);
+        }
+    },
+
+    loadScript: function(scriptURL, type) {
+        type = type || JS_SCRIPT_TYPE;
+
         return new Promise((resolve, reject) => {
-            var poll = function() {
-                setTimeout(function() { checkScript(scriptURL) }, 1000);
-            }
-
             var checkScript = function(scriptURL) {
-                var script = this.findScriptRecord(scriptURL);
+                var script = scripts.find(function(s) {
+                    return s.url === scriptURL;
+                });
 
-                if(!script.complete) {
+                if(!script) {
+                    this.addScript(scriptURL, type);
+                    poll();
+                }
+                else if(!script.complete) {
                     poll();
                 }
                 else if(script.error) {
@@ -22,52 +58,61 @@ module.exports = {
                 }
             }.bind(this);
 
-            var script = this.findScriptRecord(scriptURL);
-            if(script) {
-                checkScript(scriptURL);
+            var poll = function() {
+                setTimeout(function() { checkScript(scriptURL) }, POLL_FREQUENCY);
             }
-            else {
-                script = {
-                    url: scriptURL,
-                    complete: false,
-                    error: null
-                }
-                scripts.push(script);
-                this.addScriptTag(scriptURL);
-                poll();
-            }
+
+            checkScript(scriptURL);
         });
     },
-    findScriptRecord: function(scriptURL) {
-        return scripts.find(function(script) {
-            return script.url === scriptURL;
-        });
-    },
-    addScriptTag: function(scriptURL) {
-        var tag = document.createElement('script');
-		tag.src = scriptURL;
-		tag.async = 1;
+    addScript: function(scriptURL, type) {
+        var tag;
+        if(type === JS_SCRIPT_TYPE) {
+            tag = this.jsTag(scriptURL);
+        }
+        else if(type === CSS_SCRIPT_TYPE) {
+            tag = this.cssTag(scriptURL);
+        }
+
+        var script = {
+            url: scriptURL,
+            tag: tag,
+            complete: false,
+            error: null
+        }
+        scripts.push(script);
         
-        tag.onload = function() {
-            var script = this.findScriptRecord(scriptURL);
-            if(script) {
-                script.complete = true;
-            }
-		}.bind(this);
+        this.addTagToBody(tag, function() {
+            script.complete = true;
+        }, function() {
+            script.complete = true;
+            script.error = Error("Script failed to load: " + script.scriptURL);
+        });
+
+        return script;
+    },
+    cssTag: function(url) {
+        var tag = document.createElement('link');
+		tag.href = url;
+        tag.rel = "stylesheet";
+		tag.async = 1;
+        return tag;
+    },
+    jsTag: function(url) {
+        var tag = document.createElement('script');
+		tag.src = url;
+		tag.async = 1;
+        return tag;
+    },
+    addTagToBody: function(tag, success, failure) {
+        tag.onload = success;
+        tag.onerror = failure;
 
 		tag.onreadystatechange = function () {
             if (this.readyState === 'complete' || this.readyState === 'loaded') {
                 tag.onload();
             }
         };
-
-		tag.onerror = function(event) {
-			var script = this.findScriptRecord(scriptURL);
-            if(script) {
-                script.complete = true;
-                script.error = Error("Script failed to load: " + scriptURL);
-            }
-		}.bind(this);
 		
 		document.body.appendChild(tag);
     }

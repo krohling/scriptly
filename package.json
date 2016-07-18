@@ -1,6 +1,6 @@
 {
   "name": "scriptly",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Dynamic script loading with a Promise API",
   "main": "index.js",
   "scripts": {
