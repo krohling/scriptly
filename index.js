@@ -63,7 +63,7 @@ module.exports = {
             }
 
             checkScript(scriptURL);
-        });
+        }.bind(this));
     },
     addScript: function(scriptURL, type) {
         var tag;
