@@ -37,7 +37,7 @@ module.exports = {
     loadScript: function(scriptURL, type) {
         type = type || JS_SCRIPT_TYPE;
 
-        return new Promise((resolve, reject) => {
+        return new Promise(function(resolve, reject) {
             var checkScript = function(scriptURL) {
                 var script = scripts.find(function(s) {
                     return s.url === scriptURL;
