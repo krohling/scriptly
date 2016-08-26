@@ -1,4 +1,4 @@
-var scripts = [];
+const scripts = [];
 
 const POLL_FREQUENCY = 1000;
 const JS_SCRIPT_TYPE = 'js';
