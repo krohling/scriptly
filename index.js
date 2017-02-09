@@ -1,8 +1,8 @@
-const scripts = [];
+var scripts = [];
 
-const POLL_FREQUENCY = 1000;
-const JS_SCRIPT_TYPE = 'js';
-const CSS_SCRIPT_TYPE = 'css';
+var POLL_FREQUENCY = 1000;
+var JS_SCRIPT_TYPE = 'js';
+var CSS_SCRIPT_TYPE = 'css';
 
 module.exports = {
     loadAll: function(all) {
