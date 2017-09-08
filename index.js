@@ -38,6 +38,7 @@ module.exports = {
         type = type || JS_SCRIPT_TYPE;
 
         return new Promise(function(resolve, reject) {
+            var poll;
             var checkScript = function(scriptURL) {
                 var script = scripts.find(function(s) {
                     return s.url === scriptURL;
@@ -58,7 +59,7 @@ module.exports = {
                 }
             }.bind(this);
 
-            var poll = function() {
+            poll = function() {
                 setTimeout(function() { checkScript(scriptURL) }, POLL_FREQUENCY);
             }
 
@@ -115,5 +116,18 @@ module.exports = {
         };
 		
 		document.body.appendChild(tag);
+    },
+    insertCssStyle: function(css) {
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var style = document.createElement('style');
+    
+        style.type = 'text/css';
+        if (style.styleSheet){
+            style.styleSheet.cssText = css;
+        } else {
+            style.appendChild(document.createTextNode(css));
+        }
+        
+        head.appendChild(style);
     }
 };
